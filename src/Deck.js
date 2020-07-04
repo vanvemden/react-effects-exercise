@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Card from './Card';
 import axios from 'axios';
 import uuid from "uuid/v4";
+import "./Deck.css";
 
 const API_URL = 'https://deckofcardsapi.com/api/deck/';
 
@@ -14,6 +15,8 @@ function Deck() {
   const [remaining, setRemaining] = useState(null);
   // state for getting a new deck of cards
   const [newDeck, setNewDeck] = useState(false);
+  // state to set the interval id
+  const [intervalId, setIntervalId] = useState(0);
 
   // the effect should fetch the deck from API every time we mount
   // or request a new deck of cards 
@@ -36,26 +39,38 @@ function Deck() {
     setCards((currCards) => {
       let card = resp.data.cards[0];
       card.id = uuid();
-      return [card, ...currCards];
+      card.angle = Math.floor(Math.random() * 360);
+      return [...currCards, card];
     });
     if (resp.data.remaining === 0) {
       setRemaining(false);
+      handleInterval();
     }
   }
 
-  function handleNewCard() {
-    fetchNextCardFromDeck();
-  }
-  function handleErrorMsg() {
-    alert("Error: no cards remaining!");
+  function handleInterval() {
+    if (intervalId === 0) {
+      // set interval
+      setIntervalId(setInterval(() => {
+        fetchNextCardFromDeck();
+      }, 100));
+    } else {
+      // clear interval
+      clearInterval(intervalId);
+      setIntervalId(() => 0);
+    }
   }
 
   return (
-    <div>
-      <button onClick={remaining ? handleNewCard : handleErrorMsg}>GIMMIE A CARD!</button>
-      {!remaining ? <button onClick={() => setNewDeck(!newDeck)}>GIMMIE A NEW DECK!</button> : null}
+    <div className="Deck">
+      {remaining ? (
+        <button onClick={handleInterval}>{intervalId === 0 ? "START" : "STOP"} DEALING CARDS!</button>
+      ) : (
+          <button onClick={() => setNewDeck(!newDeck)}>GIMMIE A NEW DECK!</button>
+        )
+      }
       <div>{cards.map(card => <Card {...card} key={card.id} />)}</div>
-    </div>
+    </div >
   );
 }
 

@@ -1,9 +1,9 @@
 import React from "react";
 
-function Card({ image, value, suit }) {
+function Card({ image, value, suit, angle }) {
 
   return (
-    <img src={image} alt={`${value} of ${suit}`} />
+    <img className="Card" src={image} alt={`${value} of ${suit}`} style={{ transform: 'rotate(' + angle + 'deg)' }} />
   )
 }
 

@@ -3,7 +3,7 @@ import Deck from "./Deck";
 
 function App() {
   return (
-    <div className="Deck">
+    <div className="App">
       <Deck />
     </div>
   )
